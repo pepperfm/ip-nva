@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Referral extends Model
@@ -12,9 +14,11 @@ class Referral extends Model
     use HasFactory;
 
     public const PROGRAM_MASTER_INVITE = 'master_invite';
+
     public const PROGRAM_INFLUENCER = 'influencer';
 
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_REWARDED = 'rewarded';
 
     protected $fillable = [

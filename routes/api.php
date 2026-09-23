@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/ping', fn () => ['ok' => true]);
+Route::get('/ping', static fn() => ['ok' => true]);
 
 // TODO: POST /api/referrals/attach
 // TODO: GET  /api/referrals/my

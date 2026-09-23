@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Observers;
 
+use App\Services\Referral\ReferralService;
 use App\Models\Payment;
 use App\Models\Referral;
 use App\Models\ReferralEarning;
-use App\Services\Referral\ReferralService;
 
-class PaymentObserver
+readonly class PaymentObserver
 {
     public function __construct(private ReferralService $referrals)
     {

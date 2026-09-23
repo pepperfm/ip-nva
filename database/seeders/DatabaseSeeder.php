@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
+use Illuminate\Database\Seeder;
 use App\Models\Master;
 use App\Models\Payment;
 use App\Models\Referral;
-use Illuminate\Database\Seeder;
 
-/**
+/*
  * Демо-данные.
  *
  * Маша — реферер, у неё код MASHA10. По нему пришли четыре мастера

@@ -1,0 +1,26 @@
+includes:
+    - ./vendor/larastan/larastan/extension.neon
+    - ./vendor/pepperfm/macros-for-laravel/extension.neon
+
+parameters:
+
+    paths:
+        - app/
+
+    # Level 9 is the highest level
+    level: 5
+
+    ignoreErrors:
+        - '#PHPDoc tag @var#'
+        - "#^Unsafe usage of new static#"
+        - "#^Unsafe call to private method#"
+        - "#^Unsafe access to private property#"
+        - "#^Match expression does not handle remaining value#"
+
+    checkOctaneCompatibility: true
+
+    excludePaths:
+        analyseAndScan:
+            - tests/
+#
+#    checkMissingIterableValueType: false
