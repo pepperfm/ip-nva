@@ -5,3 +5,5 @@
 /database/database.sqlite
 .idea
 storage/.php_cs
+.agents
+.codex

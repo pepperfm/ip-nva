@@ -24,7 +24,6 @@ readonly class PaymentObserver
         $referral = Referral::where('referred_master_id', $payment->master_id)
             ->where('status', Referral::STATUS_PENDING)
             ->first();
-
         if (empty($referral)) {
             return;
         }
@@ -32,7 +31,6 @@ readonly class PaymentObserver
         $monetaryCount = Payment::where('master_id', $payment->master_id)
             ->monetary()
             ->count();
-
         if ($monetaryCount > 1) {
             return;
         }

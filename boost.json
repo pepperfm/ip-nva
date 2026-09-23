@@ -1,0 +1,25 @@
+{
+    "agents": [
+        "codex"
+    ],
+    "cloud": false,
+    "guidelines": true,
+    "mcp": true,
+    "nightwatch": false,
+    "packages": [
+        "pepperfm/ai-guidelines",
+        "pestphp/pest-plugin-agent"
+    ],
+    "sail": true,
+    "skills": [
+        "infer-conventions",
+        "laravel-best-practices",
+        "testing-best-practices",
+        "commit",
+        "laravel-php-style",
+        "laravel-sail-and-tests",
+        "plan",
+        "review",
+        "pest-plugin-agent"
+    ]
+}
