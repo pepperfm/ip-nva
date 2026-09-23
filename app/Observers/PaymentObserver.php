@@ -17,14 +17,14 @@ readonly class PaymentObserver
 
     public function created(Payment $payment): void
     {
-        if (!Payment::isMonetary($payment)) {
+        if (!$payment->isMonetary()) {
             return;
         }
 
         $referral = Referral::where('referred_master_id', $payment->master_id)
             ->where('status', Referral::STATUS_PENDING)
             ->first();
-        if (empty($referral)) {
+        if (!$referral) {
             return;
         }
 
@@ -41,7 +41,7 @@ readonly class PaymentObserver
             'referral_id' => $referral->id,
             'payment_id' => $payment->id,
             'payment_amount' => $payment->amount,
-            'amount' => $this->referrals->rewardAmount((int) $payment->amount),
+            'amount' => $this->referrals->rewardAmount($payment->amount),
             'percent' => (int) config('referral.percent'),
             'status' => ReferralEarning::STATUS_PENDING,
         ]);

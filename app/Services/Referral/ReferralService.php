@@ -12,8 +12,7 @@ class ReferralService
     public function registerReferral(Master $referred, string $code): ?Referral
     {
         $referrer = Master::where('referral_code', $code)->first();
-
-        if (empty($referrer) || $referrer->id === $referred->id) {
+        if (!$referrer || $referrer->id === $referred->id) {
             return null;
         }
 
@@ -33,6 +32,6 @@ class ReferralService
     {
         $percent = (int) config('referral.percent');
 
-        return (int) round($paymentAmount * $percent);
+        return (int) round($paymentAmount * $percent / 100);
     }
 }

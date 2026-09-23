@@ -9,17 +9,18 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['referrer_master_id', 'referred_master_id', 'status'])]
+#[Fillable(['referrer_master_id', 'referred_master_id', 'status', 'program'])]
 class Referral extends Model
 {
-    public const PROGRAM_MASTER_INVITE = 'master_invite';
+    public const string PROGRAM_MASTER_INVITE = 'master_invite';
 
-    public const PROGRAM_INFLUENCER = 'influencer';
+    public const string PROGRAM_INFLUENCER = 'influencer';
 
-    public const STATUS_PENDING = 'pending';
+    public const string STATUS_PENDING = 'pending';
 
-    public const STATUS_REWARDED = 'rewarded';
+    public const string STATUS_REWARDED = 'rewarded';
 
     #[Scope]
     protected function active(Builder $query): Builder
@@ -35,5 +36,10 @@ class Referral extends Model
     public function referredMaster(): BelongsTo
     {
         return $this->belongsTo(Master::class, 'referred_master_id');
+    }
+
+    public function earnings(): HasMany
+    {
+        return $this->hasMany(ReferralEarning::class);
     }
 }

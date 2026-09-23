@@ -16,13 +16,13 @@ use App\Observers\PaymentObserver;
 #[Fillable(['master_id', 'amount', 'type'])]
 class Payment extends Model
 {
-    public const TYPE_CARD = 'card';
+    public const string TYPE_CARD = 'card';
 
-    public const TYPE_SBP = 'sbp';
+    public const string TYPE_SBP = 'sbp';
 
-    public const TYPE_PROMO = 'promo';
+    public const string TYPE_PROMO = 'promo';
 
-    public const TYPE_TRIAL = 'trial';
+    public const string TYPE_TRIAL = 'trial';
 
     protected function casts(): array
     {
@@ -31,15 +31,17 @@ class Payment extends Model
         ];
     }
 
-    public static function isMonetary(self $payment): bool
+    public function isMonetary(): bool
     {
-        return in_array($payment->type, [self::TYPE_CARD, self::TYPE_SBP], true) && $payment->amount > 0;
+        return in_array($this->type, [self::TYPE_CARD, self::TYPE_SBP], true) && $this->amount > 0;
     }
 
     #[Scope]
     protected function monetary(Builder $query): Builder
     {
-        return $query->whereIn('type', [self::TYPE_CARD, self::TYPE_SBP]);
+        return $query
+            ->whereIn('type', [self::TYPE_CARD, self::TYPE_SBP])
+            ->where('amount', '>', 0);
     }
 
     public function master(): BelongsTo

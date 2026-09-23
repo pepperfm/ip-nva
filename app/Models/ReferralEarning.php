@@ -14,9 +14,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 ])]
 class ReferralEarning extends Model
 {
-    public const STATUS_PENDING = 'pending';
+    public const string STATUS_PENDING = 'pending';
 
-    public const STATUS_PAID = 'paid';
+    public const string STATUS_PAID = 'paid';
 
     protected function casts(): array
     {
