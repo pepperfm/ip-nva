@@ -21,31 +21,36 @@ readonly class PaymentObserver
             return;
         }
 
-        $referral = Referral::where('referred_master_id', $payment->master_id)
-            ->where('status', Referral::STATUS_PENDING)
-            ->first();
-        if (!$referral) {
-            return;
-        }
+        db()->transaction(function () use ($payment): void {
+            $referral = Referral::query()
+                ->where('referred_master_id', $payment->master_id)
+                ->where('status', Referral::STATUS_PENDING)
+                ->lockForUpdate()
+                ->first();
+            if (!$referral) {
+                return;
+            }
 
-        $monetaryCount = Payment::where('master_id', $payment->master_id)
-            ->monetary()
-            ->count();
-        if ($monetaryCount > 1) {
-            return;
-        }
+            if (Payment::query()
+                ->where('master_id', $payment->master_id)
+                ->where('id', '<', $payment->id)
+                ->monetary()
+                ->exists()) {
+                return;
+            }
 
-        ReferralEarning::create([
-            'referrer_master_id' => $referral->referrer_master_id,
-            'referred_master_id' => $referral->referred_master_id,
-            'referral_id' => $referral->id,
-            'payment_id' => $payment->id,
-            'payment_amount' => $payment->amount,
-            'amount' => $this->referrals->rewardAmount($payment->amount),
-            'percent' => (int) config('referral.percent'),
-            'status' => ReferralEarning::STATUS_PENDING,
-        ]);
+            ReferralEarning::create([
+                'referrer_master_id' => $referral->referrer_master_id,
+                'referred_master_id' => $referral->referred_master_id,
+                'referral_id' => $referral->id,
+                'payment_id' => $payment->id,
+                'payment_amount' => $payment->amount,
+                'amount' => $this->referrals->rewardAmount($payment->amount),
+                'percent' => (int) config('referral.percent'),
+                'status' => ReferralEarning::STATUS_PENDING,
+            ]);
 
-        $referral->update(['status' => Referral::STATUS_REWARDED]);
+            $referral->update(['status' => Referral::STATUS_REWARDED]);
+        });
     }
 }

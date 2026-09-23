@@ -7,6 +7,7 @@ use App\Models\Payment;
 use App\Models\Referral;
 use App\Models\ReferralEarning;
 use Database\Seeders\DatabaseSeeder;
+use Illuminate\Database\UniqueConstraintViolationException;
 
 it('attaches a referral once and returns the existing attachment on repeat', function (): void {
     $referrer = Master::create(['name' => 'Referrer', 'referral_code' => 'REF123']);
@@ -27,6 +28,24 @@ it('attaches a referral once and returns the existing attachment on repeat', fun
     expect(Referral::query()->where('referred_master_id', $referred->id)->count())->toBe(1);
 });
 
+it('enforces a single referral per referred master in the database', function (): void {
+    $firstReferrer = Master::create(['name' => 'First referrer', 'referral_code' => 'REF123']);
+    $secondReferrer = Master::create(['name' => 'Second referrer', 'referral_code' => 'REF456']);
+    $referred = Master::create(['name' => 'Referred', 'referral_code' => 'NEW123']);
+
+    Referral::create([
+        'referrer_master_id' => $firstReferrer->id,
+        'referred_master_id' => $referred->id,
+        'status' => Referral::STATUS_PENDING,
+    ]);
+
+    expect(fn() => Referral::create([
+        'referrer_master_id' => $secondReferrer->id,
+        'referred_master_id' => $referred->id,
+        'status' => Referral::STATUS_PENDING,
+    ]))->toThrow(UniqueConstraintViolationException::class);
+});
+
 it('rejects an unknown referral code and self referral', function (): void {
     $master = Master::create(['name' => 'Master', 'referral_code' => 'OWN123']);
 
@@ -43,6 +62,18 @@ it('rejects an unknown referral code and self referral', function (): void {
         ->assertUnprocessable();
 
     expect(Referral::query()->count())->toBe(0);
+});
+
+it('returns validation errors as JSON when the request accepts HTML', function (): void {
+    $master = Master::create(['name' => 'Master', 'referral_code' => 'OWN123']);
+
+    $this->call('POST', '/api/referrals/attach', [], [], [], [
+        'HTTP_ACCEPT' => 'text/html',
+        'HTTP_X_MASTER_ID' => (string) $master->id,
+    ])
+        ->assertUnprocessable()
+        ->assertHeader('Content-Type', 'application/json')
+        ->assertJsonValidationErrors(['code']);
 });
 
 it('requires a known current master for referral routes', function (): void {
